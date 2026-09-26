@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-
-#define uint unsigned int
+#include <sys/types.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -210,6 +209,7 @@ int main(){
     // vao1
     // glBindVertexArray(VAO);
     // glDrawElements(GL_TRIANGLES, sizeof(indicies) / sizeof(uint), GL_UNSIGNED_INT, 0);
+
     // vao2
     glBindVertexArray(VAO2);
     glDrawElements(GL_TRIANGLES, sizeof(indicies2) / sizeof(uint), GL_UNSIGNED_INT, 0);
