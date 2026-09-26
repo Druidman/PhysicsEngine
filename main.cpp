@@ -114,30 +114,88 @@ int main(){
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
   float vertices[] = {
-      -0.5f, -0.5f, 0.0f,
-      0.5f, -0.5f, 0.0f,
-      0.0f,  0.5f, 0.0f
-  };  
+      // first triangle
+      0.5f,  0.5f, 0.0f,  // top right
+      0.5f, -0.5f, 0.0f,  // bottom right
+      -0.5f,  0.5f, 0.0f,  // top left 
+      -0.5f, -0.5f, 0.0f,  // bottom left
 
-  
+  }; 
 
-  
+  uint indicies[] = {
+    2, 0, 1, // first triangle
+    2, 1, 3  // second triangle
+  };
+
+  uint indicies2[] = {
+    2, 0, 1, // first triangle
+  };
+
+
+  // SHADERS
   uint shaderProgram = loadShaderProgram();
-  glUseProgram(shaderProgram);
+  
 
+  // VERTICIES DATA
   unsigned int VBO;
   glGenBuffers(1, &VBO);  
   glBindBuffer(GL_ARRAY_BUFFER, VBO);  
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
 
+
+  // FIRST ELEMENT BUFFER (RECTANGLE)
+  unsigned int EBO;
+  glGenBuffers(1, &EBO);  
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);  
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  
+
+
+  // SECOND ELEMENT BUFFER (TRIANGLE)
+  unsigned int EBO2;
+  glGenBuffers(1, &EBO2);  
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);  
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies2), indicies2, GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  
+
+  // VAO FOR RECTANGLE
   unsigned int VAO;
   glGenVertexArrays(1, &VAO); 
   glBindVertexArray(VAO);
 
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);  
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
   glEnableVertexAttribArray(0); 
 
-  
+  glBindVertexArray(0); // unbind
+
+  // VAO FOR TRIANGLE
+  unsigned int VAO2;
+  glGenVertexArrays(1, &VAO2); 
+  glBindVertexArray(VAO2);
+
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
+  glEnableVertexAttribArray(0); 
+
+  glBindVertexArray(0); // unbind
+
+
+  // map ebos to vaos
+  glBindVertexArray(VAO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBindVertexArray(0); // unbind
+
+  glBindVertexArray(VAO2);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+  glBindVertexArray(0); // unbind
+
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
   while(!glfwWindowShouldClose(window))
   {
     processInput(window);
@@ -146,9 +204,15 @@ int main(){
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // drawing using first vao
+    // shaders
+    glUseProgram(shaderProgram);  
+    // vao1
+    // glBindVertexArray(VAO);
+    // glDrawElements(GL_TRIANGLES, sizeof(indicies) / sizeof(uint), GL_UNSIGNED_INT, 0);
+    // vao2
+    glBindVertexArray(VAO2);
+    glDrawElements(GL_TRIANGLES, sizeof(indicies2) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
     glfwPollEvents();    
   }
