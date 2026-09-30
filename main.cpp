@@ -5,9 +5,15 @@
 #include <fstream>
 #include <sys/types.h>
 
+
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/glm/gtc/type_ptr.hpp"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
+  
+  glViewport(0, 0, width, height );
 }  
 
 void processInput(GLFWwindow *window)
@@ -108,16 +114,16 @@ int main(){
   }    
 
 
-  glViewport(0, 0, 800, 600);
+  glViewport(0, 0, 1920, 1080);
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
 
   float vertices[] = {
       // first triangle
-      0.5f,  0.5f, 0.0f,  // top right
-      0.5f, -0.5f, 0.0f,  // bottom right
-      -0.5f,  0.5f, 0.0f,  // top left 
-      -0.5f, -0.5f, 0.0f,  // bottom left
+      0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top right
+      0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom right
+     -0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top left 
+     -0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom left
 
   }; 
 
@@ -164,9 +170,12 @@ int main(){
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0); 
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1); 
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
+  
 
   glBindVertexArray(0); // unbind
 
@@ -176,9 +185,11 @@ int main(){
   glBindVertexArray(VAO2);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0); 
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1); 
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
 
   glBindVertexArray(0); // unbind
 
@@ -193,10 +204,34 @@ int main(){
   glBindVertexArray(0); // unbind
 
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+
+
+  glm::mat4 trans = glm::mat4(1.0f);
+  trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+  // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
+
+  glUseProgram(shaderProgram);  
+  unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+
+  double lastTime = glfwGetTime();
+  double currentTime = glfwGetTime();
+  double delta = lastTime - currentTime;
   while(!glfwWindowShouldClose(window))
   {
+    currentTime = glfwGetTime();
+    delta = lastTime - currentTime;
+    lastTime = currentTime;
+
+
+    
+    // handle object state updates
+    // rotate
+    trans = glm::rotate(trans, glm::radians(90.0f * (float)delta), glm::vec3(0.0, 0.0, 1.0));
+
+
+    // rendering
     processInput(window);
     glfwSwapBuffers(window);
 
@@ -206,13 +241,17 @@ int main(){
     // drawing using first vao
     // shaders
     glUseProgram(shaderProgram);  
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
     // vao1
-    // glBindVertexArray(VAO);
-    // glDrawElements(GL_TRIANGLES, sizeof(indicies) / sizeof(uint), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, sizeof(indicies) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
     // vao2
-    glBindVertexArray(VAO2);
-    glDrawElements(GL_TRIANGLES, sizeof(indicies2) / sizeof(uint), GL_UNSIGNED_INT, 0);
+    // glBindVertexArray(VAO2);
+    
+
+    // glDrawElements(GL_TRIANGLES, sizeof(indicies2) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
     glfwPollEvents();    
   }
