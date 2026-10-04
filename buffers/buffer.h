@@ -1,5 +1,12 @@
+
+
+
+
+#ifndef BUFFER_H
+#define BUFFER_H
+
 #include <sys/types.h>
-#include "vendor/glad/glad.h"
+#include "../vendor/glad/glad.h"
 
 class Buffer {
   private:
@@ -19,6 +26,7 @@ class Buffer {
     Buffer(uint type) : type(type) {
       // generate a buffer
       glGenBuffers(1, &this->binding); 
+      
     }
     virtual ~Buffer(){release();}
 
@@ -52,4 +60,12 @@ class Buffer {
     inline void unbind() const noexcept {
       glBindBuffer(type, 0);
     }
+    template <typename T, size_t N> 
+    inline void setData(T (&data)[N]) noexcept {
+      bind();
+      std::cout << "SET DATA: " << sizeof(data) << std::endl;
+      glBufferData(type, sizeof(data), data, GL_STATIC_DRAW);
+      unbind();
+    }
 };
+#endif

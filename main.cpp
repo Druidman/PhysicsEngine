@@ -10,6 +10,9 @@
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/glm/gtc/type_ptr.hpp"
 
+#include "buffers/arrayBuffer.h"
+#include "buffers/elementBuffer.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
   
@@ -117,143 +120,136 @@ int main(){
   glViewport(0, 0, 1920, 1080);
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
-
-  float vertices[] = {
-      // first triangle
-      0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top right
-      0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom right
-     -0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top left 
-     -0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom left
-
-  }; 
-
-  uint indicies[] = {
-    2, 0, 1, // first triangle
-    2, 1, 3  // second triangle
-  };
-
-  uint indicies2[] = {
-    2, 0, 1, // first triangle
-  };
-
-
-  // SHADERS
-  uint shaderProgram = loadShaderProgram();
-  
-
-  // VERTICIES DATA
-  unsigned int VBO;
-  glGenBuffers(1, &VBO);  
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);  
-
-
-  // FIRST ELEMENT BUFFER (RECTANGLE)
-  unsigned int EBO;
-  glGenBuffers(1, &EBO);  
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);  
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  
-
-
-  // SECOND ELEMENT BUFFER (TRIANGLE)
-  unsigned int EBO2;
-  glGenBuffers(1, &EBO2);  
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);  
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies2), indicies2, GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);  
-
-  // VAO FOR RECTANGLE
-  unsigned int VAO;
-  glGenVertexArrays(1, &VAO); 
-  glBindVertexArray(VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0); 
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1); 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);  
-  
-
-  glBindVertexArray(0); // unbind
-
-  // VAO FOR TRIANGLE
-  unsigned int VAO2;
-  glGenVertexArrays(1, &VAO2); 
-  glBindVertexArray(VAO2);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0); 
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1); 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);  
-
-  glBindVertexArray(0); // unbind
-
-
-  // map ebos to vaos
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBindVertexArray(0); // unbind
-
-  glBindVertexArray(VAO2);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-  glBindVertexArray(0); // unbind
-
-
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
-
-  glm::mat4 trans = glm::mat4(1.0f);
-  trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-  // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
-
-  glUseProgram(shaderProgram);  
-  unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-
-  double lastTime = glfwGetTime();
-  double currentTime = glfwGetTime();
-  double delta = lastTime - currentTime;
-  while(!glfwWindowShouldClose(window))
+  // scope because of destructors
   {
-    currentTime = glfwGetTime();
-    delta = lastTime - currentTime;
-    lastTime = currentTime;
+    float vertices[] = {
+        // first triangle
+        0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top right
+        0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom right
+      -0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top left 
+      -0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom left
+
+    }; 
+
+    uint indices[] = {
+      2, 0, 1, // first triangle
+      2, 1, 3  // second triangle
+    };
+
+    uint indices2[] = {
+      2, 0, 1, // first triangle
+    };
 
 
+    // SHADERS
+    uint shaderProgram = loadShaderProgram();
     
-    // handle object state updates
-    // rotate
-    trans = glm::rotate(trans, glm::radians(90.0f * (float)delta), glm::vec3(0.0, 0.0, 1.0));
+
+    // VERTICIES DATA
+    ArrayBuffer VBO;
+    VBO.setData(vertices);
 
 
-    // rendering
-    processInput(window);
-    glfwSwapBuffers(window);
+    // FIRST ELEMENT BUFFER (RECTANGLE)
+    ElementBuffer EBO;
+    EBO.setData(indices);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
 
-    // drawing using first vao
-    // shaders
-    glUseProgram(shaderProgram);  
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    // SECOND ELEMENT BUFFER (TRIANGLE)
+    ElementBuffer EBO2;
+    EBO2.setData(indices2);
 
-    // vao1
+    // VAO FOR RECTANGLE
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO); 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, sizeof(indicies) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
-    // vao2
-    // glBindVertexArray(VAO2);
+    VBO.bind();
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0); 
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1); 
+    VBO.unbind();
     
 
-    // glDrawElements(GL_TRIANGLES, sizeof(indicies2) / sizeof(uint), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0); // unbind
 
-    glfwPollEvents();    
+    // VAO FOR TRIANGLE
+    unsigned int VAO2;
+    glGenVertexArrays(1, &VAO2); 
+    glBindVertexArray(VAO2);
+
+    VBO.bind();
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0); 
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1); 
+    VBO.unbind();
+
+    glBindVertexArray(0); // unbind
+
+
+    // map ebos to vaos
+    glBindVertexArray(VAO);
+    EBO.bind();
+    glBindVertexArray(0); // unbind
+
+    glBindVertexArray(VAO2);
+    EBO2.bind();
+    glBindVertexArray(0); // unbind
+
+
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
+
+    glUseProgram(shaderProgram);  
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+
+    double lastTime = glfwGetTime();
+    double currentTime = glfwGetTime();
+    double delta = lastTime - currentTime;
+    while(!glfwWindowShouldClose(window))
+    {
+      currentTime = glfwGetTime();
+      delta = lastTime - currentTime;
+      lastTime = currentTime;
+
+
+      
+      // handle object state updates
+      // rotate 90 deg per second
+      trans = glm::rotate(trans, glm::radians(90.0f * (float)delta), glm::vec3(0.0, 0.0, 1.0));
+
+
+      // rendering
+      processInput(window);
+      glfwSwapBuffers(window);
+
+      glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      // drawing using first vao
+      // shaders
+      glUseProgram(shaderProgram);  
+      glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+      // vao1
+      glBindVertexArray(VAO);
+      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(uint), GL_UNSIGNED_INT, 0);
+
+      // vao2
+      // glBindVertexArray(VAO2);
+      
+
+      // glDrawElements(GL_TRIANGLES, sizeof(indices2) / sizeof(uint), GL_UNSIGNED_INT, 0);
+
+      glfwPollEvents();    
+    }
   }
   glfwTerminate();
   std::cout << "Window closed...\n";
