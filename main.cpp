@@ -12,6 +12,7 @@
 
 #include "buffers/arrayBuffer.h"
 #include "buffers/elementBuffer.h"
+#include "shaders/shaderProgram.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -25,74 +26,7 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 }
 
-std::string readShader(std::string filePath) {
 
-  std::ifstream file(filePath);
-
-  if (!file.is_open()){
-    std::cout << "File does not exist! " << filePath << '\n';
-    std::exit(1);
-  }
-
-  std::string shaderContent;
-  std::string line;
-  while (std::getline(file, line)){
-    shaderContent +=  '\n' + line;
-  }
-  std::cout << shaderContent << '\n';
-  return shaderContent;
-};
-
-uint loadShader(std::string filePath, GLenum type){
-  std::string shaderSource = readShader(filePath);
-  const char* shaderSourceCstr = shaderSource.c_str();
-
-  uint shader;
-  shader = glCreateShader(type);
-  glShaderSource(shader, 1, &shaderSourceCstr, NULL);
-  glCompileShader(shader);  
-  // compilation done, check logs
-
-  int  success;
-  char infoLog[512];
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-  if(!success)
-  {
-      glGetShaderInfoLog(shader, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER::" << filePath << " ::COMPILATION_FAILED\n" << infoLog << std::endl;
-      std::exit(1);
-  }
-
-  // all good
-  return shader;
-}
-
-
-uint loadShaderProgram(){
-  uint shaderProgram;
-  shaderProgram = glCreateProgram();
-  uint vertexShader = loadShader("shaders/vertex.glsl", GL_VERTEX_SHADER);
-  uint fragmentShader = loadShader("shaders/fragment.glsl", GL_FRAGMENT_SHADER);
-
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-
-  int  success;
-  char infoLog[512];
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if(!success) {
-      glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER_PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-      std::exit(1);
-  }
-  // all good, cleanup
-
-
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);  
-  return shaderProgram;
-}
 int main(){
   
   glfwInit();
@@ -142,7 +76,7 @@ int main(){
 
 
     // SHADERS
-    uint shaderProgram = loadShaderProgram();
+    ShaderProgram shaderProgram("shaders/vertex.glsl", "shaders/fragment.glsl");
     
 
     // VERTICIES DATA
@@ -207,8 +141,8 @@ int main(){
     trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
 
-    glUseProgram(shaderProgram);  
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    
+    unsigned int transformLoc = shaderProgram.getUniformLocation("transform");
 
     double lastTime = glfwGetTime();
     double currentTime = glfwGetTime();
@@ -235,7 +169,7 @@ int main(){
 
       // drawing using first vao
       // shaders
-      glUseProgram(shaderProgram);  
+      shaderProgram.use();
       glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
       // vao1
