@@ -7,12 +7,18 @@
 
 
 #include "vendor/glm/glm.hpp"
+#include "vendor/glm/vec2.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "vendor/glm/gtc/type_ptr.hpp"
 
 #include "buffers/arrayBuffer.h"
 #include "buffers/elementBuffer.h"
 #include "shaders/shaderProgram.h"
+
+
+
+
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -150,7 +156,7 @@ int main(){
     while(!glfwWindowShouldClose(window))
     {
       currentTime = glfwGetTime();
-      delta = lastTime - currentTime;
+      delta = currentTime - lastTime;
       lastTime = currentTime;
 
 
@@ -162,7 +168,7 @@ int main(){
 
       // rendering
       processInput(window);
-      glfwSwapBuffers(window);
+      
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
@@ -182,6 +188,9 @@ int main(){
 
       // glDrawElements(GL_TRIANGLES, sizeof(indices2) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
+      
+
+      glfwSwapBuffers(window);
       glfwPollEvents();    
     }
   }
