@@ -2,9 +2,10 @@
 
 #ifndef SHADER_STORAGE_BUFFER_H
 #define SHADER_STORAGE_BUFFER_H
-
-class ShaderStorageBuffer : public Buffer {
+template <typename T>
+class ShaderStorageBuffer : public Buffer<T, GL_SHADER_STORAGE_BUFFER>  {
   public:
-    ShaderStorageBuffer() : Buffer(GL_SHADER_STORAGE_BUFFER){};
+    using Buffer::Buffer;
+
 };
 #endif

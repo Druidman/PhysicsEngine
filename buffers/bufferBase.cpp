@@ -1,8 +1,7 @@
-#include "buffer.h"
+#include "bufferBase.h"
 #include <iostream>
 #include "../vendor/glad/glad.h"
-
-void Buffer::allocate(size_t size){
+void BufferBase::allocate(size_t size){
   
   if (size == 0){
     std::cout << "cannot allocate 0 bytes for a buffer" << std::endl;
@@ -18,12 +17,32 @@ void Buffer::allocate(size_t size){
     
 }
 
-void Buffer::expandBuffer(size_t by){
+void BufferBase::appendData(const void* data, size_t size) {
+  // checks
+  if (size + used_size > buffer_size){
+    // need to grow
+    this->expandBuffer(size + used_size - buffer_size);
+  };
+  bind();
+  glBufferSubData(type, used_size, size, data);
+
+  used_size += size;
+}
+
+void BufferBase::setData(const void* data, size_t size) {
+  bind();
+  std::cout << "SET DATA: " << sizeof(data) << std::endl;
+  glBufferData(type, sizeof(data), data, GL_DYNAMIC_DRAW);
+  buffer_size = sizeof(data);
+  used_size = sizeof(data);
+}
+
+void BufferBase::expandBuffer(size_t by){
   if (by == 0){
     return;
   }
   // 1. make new buffer
-  Buffer newBuf(GL_COPY_WRITE_BUFFER);
+  BufferBase newBuf(GL_COPY_WRITE_BUFFER);
   newBuf.allocate(buffer_size + by);
 
   // 2. copy data to it

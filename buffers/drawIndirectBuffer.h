@@ -3,8 +3,16 @@
 #ifndef DRAW_INDIRECT_BUFFER_H
 #define DRAW_INDIRECT_BUFFER_H
 
-class DrawIndirectBuffer : public Buffer {
+typedef  struct {
+  uint  count;
+  uint  instanceCount;
+  uint  firstIndex;
+  int  baseVertex;
+  uint  baseInstance;
+} DrawElementsIndirectCommand;
+
+class DrawIndirectBuffer : public Buffer<DrawElementsIndirectCommand,GL_DRAW_INDIRECT_BUFFER>  {
   public:
-    DrawIndirectBuffer() : Buffer(GL_DRAW_INDIRECT_BUFFER){};
+    using Buffer<DrawElementsIndirectCommand,GL_DRAW_INDIRECT_BUFFER>::Buffer;
 };
 #endif

@@ -3,8 +3,9 @@
 #ifndef ARRAY_BUFFER_H
 #define ARRAY_BUFFER_H
 
-class ArrayBuffer : public Buffer {
+template <typename T>
+class ArrayBuffer : public Buffer<T,GL_ARRAY_BUFFER>  {
   public:
-    ArrayBuffer() : Buffer(GL_ARRAY_BUFFER){};
+    using Buffer<T,GL_ARRAY_BUFFER>::Buffer;
 };
 #endif

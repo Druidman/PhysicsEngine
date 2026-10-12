@@ -86,7 +86,7 @@ int main(){
     
 
     // VERTICIES DATA
-    ArrayBuffer VBO;
+    ArrayBuffer<float> VBO;
     VBO.setData(vertices);
 
 

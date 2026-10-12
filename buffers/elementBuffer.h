@@ -3,8 +3,9 @@
 #ifndef ELEMENT_BUFFER_H
 #define ELEMENT_BUFFER_H
 
-class ElementBuffer : public Buffer {
+class ElementBuffer : public Buffer<uint,GL_ELEMENT_ARRAY_BUFFER> {
   public:
-    ElementBuffer() : Buffer(GL_ELEMENT_ARRAY_BUFFER){}
+    using Buffer::Buffer;
+
 };
 #endif

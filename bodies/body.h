@@ -26,13 +26,14 @@ class Body{
   public:
     Body(glm::vec2 position, float width, float height) : position(position), height(height), width(width) {
       this->vertices = generateBaseVertices();
+      
     }
-
-    inline std::array<float, 12> getVertices(){
+    
+    inline std::array<float, 12>& getVertices(){
       return this->vertices;
     }
 
-    inline std::array<uint, 6> getIndices(){
+    inline std::array<uint, 6>& getIndices(){
       return this->indices;
     }
 
