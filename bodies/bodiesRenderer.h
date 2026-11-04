@@ -13,10 +13,10 @@
 class BodiesRenderer {
   private:
 
-    ArrayBuffer vbo; // for object base vertices
+    ArrayBuffer<float> vbo; // for object base vertices
     ElementBuffer ebo; // in what order to draw vertices
     DrawIndirectBuffer ibo; // gl_DrawId for each object (set of indices)
-    ShaderStorageBuffer ssbo; // for object transform, rotation
+    ShaderStorageBuffer<glm::vec2> ssbo; // for object transform, rotation
     
     std::vector<Body*> bodies; // list of bodies
   public:
@@ -24,6 +24,10 @@ class BodiesRenderer {
 
     // should add a already exists check
     void addBody(Body* body);
+
+    void draw(){
+      glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, 0, this->bodies.size(), sizeof(DrawElementsIndirectCommand));
+    }
 
 
 

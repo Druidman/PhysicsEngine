@@ -143,12 +143,12 @@ int main(){
 
 
 
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    // glm::mat4 trans = glm::mat4(1.0f);
+    // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
     // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
 
     
-    unsigned int transformLoc = shaderProgram.getUniformLocation("transform");
+    // unsigned int transformLoc = shaderProgram.getUniformLocation("transform");
 
     double lastTime = glfwGetTime();
     double currentTime = glfwGetTime();
@@ -176,11 +176,11 @@ int main(){
       // drawing using first vao
       // shaders
       shaderProgram.use();
-      glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+      // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
       // vao1
-      glBindVertexArray(VAO);
-      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(uint), GL_UNSIGNED_INT, 0);
+      // glBindVertexArray(VAO);
+      // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
       // vao2
       // glBindVertexArray(VAO2);
