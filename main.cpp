@@ -61,19 +61,46 @@ int main(){
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
   // scope because of destructors
+  const int AMOUNT_OF_VERTICES = 8;
   {
-    float vertices[] = {
-        // first triangle
-        0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top right
-        0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom right
-      -0.5f,  0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // top left 
-      -0.5f, -0.5f, 0.0f,    1.0f, 0.5f, 1.0f, // bottom left
+    float vertices[AMOUNT_OF_VERTICES * 6] = {
+        
+
+        0.5f,  0.5f, 0.5f,    1.0f, 0.5f, 1.0f, // top right front
+        0.5f, -0.5f, 0.5f,    1.0f, 0.5f, 1.0f, // bottom right front
+      -0.5f,  0.5f, 0.5f,    1.0f, 0.5f, 1.0f, // top left  front
+      -0.5f, -0.5f, 0.5f,    1.0f, 0.5f, 1.0f, // bottom left front
+
+       0.5f,  0.5f, -0.5f,    1.0f, 0.5f, 1.0f, // top right back
+        0.5f, -0.5f, -0.5f,    1.0f, 0.5f, 1.0f, // bottom right back
+      -0.5f,  0.5f, -0.5f,    1.0f, 0.5f, 1.0f, // top left  back
+      -0.5f, -0.5f, -0.5f,    1.0f, 0.5f, 1.0f, // bottom left back
 
     }; 
 
     uint indices[] = {
+      // front
       2, 0, 1, // first triangle
-      2, 1, 3  // second triangle
+      2, 1, 3,  // second triangle
+
+      // back
+      6, 4, 5, // first triangle
+      6, 5, 7,  // second triangle,
+      // top
+      2, 6, 4,
+      2, 4, 0,
+
+      // bottom
+      3, 7, 5,
+      3, 5, 1,
+      
+      // right
+      0, 4, 5,
+      0, 5, 1,
+
+      // left
+      2, 6, 7,
+      2, 7, 3
     };
 
     uint indices2[] = {
@@ -139,16 +166,16 @@ int main(){
     glBindVertexArray(0); // unbind
 
 
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
 
-    // glm::mat4 trans = glm::mat4(1.0f);
-    // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-    // trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));  
 
     
-    // unsigned int transformLoc = shaderProgram.getUniformLocation("transform");
+    unsigned int transformLoc = shaderProgram.getUniformLocation("transform");
 
     double lastTime = glfwGetTime();
     double currentTime = glfwGetTime();
@@ -160,14 +187,10 @@ int main(){
       lastTime = currentTime;
 
 
-      
-      // handle object state updates
-      // rotate 90 deg per second
-      trans = glm::rotate(trans, glm::radians(90.0f * (float)delta), glm::vec3(0.0, 0.0, 1.0));
-
-
       // rendering
       processInput(window);
+  
+      trans = glm::rotate(trans, glm::radians((float)delta * 90.0f), glm::vec3(1,0.5,1));
       
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -176,11 +199,12 @@ int main(){
       // drawing using first vao
       // shaders
       shaderProgram.use();
-      // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+      glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
       // vao1
-      // glBindVertexArray(VAO);
-      // glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(uint), GL_UNSIGNED_INT, 0);
+      glBindVertexArray(VAO);
+      EBO.bind();
+      glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(uint), GL_UNSIGNED_INT, 0);
 
       // vao2
       // glBindVertexArray(VAO2);

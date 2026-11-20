@@ -32,9 +32,9 @@ void BufferBase::appendData(const void* data, size_t size) {
 void BufferBase::setData(const void* data, size_t size) {
   bind();
   std::cout << "SET DATA: " << sizeof(data) << std::endl;
-  glBufferData(type, sizeof(data), data, GL_DYNAMIC_DRAW);
-  buffer_size = sizeof(data);
-  used_size = sizeof(data);
+  glBufferData(type, size, data, GL_DYNAMIC_DRAW);
+  buffer_size = size;
+  used_size = size;
 }
 
 void BufferBase::expandBuffer(size_t by){

@@ -4,3 +4,6 @@
 *.c.*
 *.cpp.*
 main
+venv/
+__pycache__/
+*.parquet
