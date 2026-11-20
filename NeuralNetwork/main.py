@@ -13,6 +13,10 @@ from typing import List
 from PIL import Image
 from random import Random
 import math
+import matplotlib.pyplot as plt
+
+
+
 random = Random()
 
 # some constant
@@ -210,6 +214,7 @@ def runNetwork(sample: DataSample):
 # Train
 
 print('Training the network...')
+graphData = []
 costSum = 0
 for i,sample in enumerate(trainData):
   # print(f'Starting training on sample: {i}')
@@ -221,8 +226,9 @@ for i,sample in enumerate(trainData):
   # print('Starting backpropagation...')
   costSum += cost
   if i%100 == 0:
-    print(f'Avg Cost for last 100 samples: {costSum/100} after: {i} samples')
-    print(output)
+    avgCostForLast100 = costSum/100
+    graphData.append((avgCostForLast100, i))
+    print(f'Avg Cost for last 100 samples: {avgCostForLast100} after: {i} samples')
     costSum = 0
 
   ## We have cost/loss so now we only need to compute gradients for each weight and bias with respect to the cost: dCost / (dW or dB)
@@ -273,6 +279,13 @@ for i,sample in enumerate(trainData):
   # print(f'Sample {i} done')
   
 
+
+x = [j[1] for j in graphData]
+y = [j[0] for j in graphData]
+
+fig, ax = plt.subplots()
+ax.plot(x, y)
+plt.show()
   
 # print('Testing the network...')
 # accuracy = 100
