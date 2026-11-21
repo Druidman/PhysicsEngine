@@ -244,6 +244,14 @@ export default function Home() {
               >
                 Check it out on Github
               </a>
+              <a
+                href="https://github.com/Druidman/PhysicsEngine/releases/tag/v0.0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 ml-3 inline-block rounded-full border border-[#a8d5c2]/40 px-6 py-2.5 font-medium text-[#a8d5c2] transition-colors hover:bg-[#a8d5c2]/10"
+              >
+                Download for Linux
+              </a>
             </section>
           </div>
         </div>
