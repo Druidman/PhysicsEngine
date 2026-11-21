@@ -19,9 +19,21 @@ Later this will be adapted to take character and world parameters as a input and
 
 
 ## How to run (Linux)
+### Engine
+#### Download latest release
+- [here](https://github.com/Druidman/PhysicsEngine/releases/tag/v0.0)
+#### Compile from source
+- clone repo
 - install glfw as you like xD
 - use this to build: `g++ main.cpp vendor/glad/glad.c shaders/*.cpp buffers/*.cpp -o main -lglfw -lGL -g`
 - run: `./main`
+### Neural network
+Follow this steps:
+1. Clone repo and enter NeuralNetwork/ directory
+2. Create venv: `python3 -m venv venv`
+3. Activate venv: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Run the main file: `python3 main.py`
 
 ## How to run (windows)
 **Idk since I don't have a windows**
