@@ -279,6 +279,8 @@ for i,sample in enumerate(trainData):
   # print(f'Sample {i} done')
   
 
+# finished training so dump the network into a file
+
 
 x = [j[1] for j in graphData]
 y = [j[0] for j in graphData]
@@ -286,6 +288,7 @@ y = [j[0] for j in graphData]
 fig, ax = plt.subplots()
 ax.plot(x, y)
 plt.show()
+  
   
 # print('Testing the network...')
 # accuracy = 100
