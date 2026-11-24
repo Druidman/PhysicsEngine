@@ -6,4 +6,4 @@
 main
 venv/
 __pycache__/
-*.parquet
+# *.parquet
