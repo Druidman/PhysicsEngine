@@ -22,6 +22,9 @@ Later this will be adapted to take character and world parameters as a input and
 ### Engine
 #### Download latest release
 - [here](https://github.com/Druidman/PhysicsEngine/releases/tag/v0.0)
+- then unzip it: `unzip <file> -d PhysicsSim`
+- add permissions for run inside `PhysicsSim/` folder: `chmod +x main`
+- run: `./main`
 #### Compile from source
 - clone repo
 - install glfw as you like xD
