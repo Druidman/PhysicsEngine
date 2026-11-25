@@ -22,6 +22,7 @@ Later this will be adapted to take character and world parameters as a input and
 ### Engine
 #### Download latest release
 - [here](https://github.com/Druidman/PhysicsEngine/releases/tag/v0.0)
+- [MIGHT BE REQUIRED] download glfw if you don't have it: `sudo apt install libglfw3-dev` (on debian)
 - then unzip it: `unzip <file> -d PhysicsSim`
 - add permissions for run inside `PhysicsSim/` folder: `chmod +x main`
 - run: `./main`
